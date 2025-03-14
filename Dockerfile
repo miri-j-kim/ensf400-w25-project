@@ -1,11 +1,5 @@
-# Use OpenJDK base image
-FROM openjdk:17-jdk-slim
-
-# Set working directory
-WORKDIR /app
-
-# Copy application JAR file into the container
-COPY target/demo.jar demo.jar
-
-# Define entry point for running the application
-ENTRYPOINT ["java", "-jar", "demo.jar"]
+FROM tomcat:9.0
+WORKDIR /usr/local/tomcat/webapps/
+COPY build/libs/ensf400-w25-project-1.0.0.war demo.war
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
