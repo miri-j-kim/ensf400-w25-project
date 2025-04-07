@@ -47,12 +47,22 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                // Check if Docker is available
-                sh 'if command -v docker &> /dev/null; then echo "Docker is installed"; else echo "WARNING: Docker is not installed. This will fail."; fi'
-                
-                // Create a temporary Dockerfile that includes the build step
-                sh '''
-                cat > Dockerfile.jenkins << EOF
+                script {
+                    def dockerExists = false
+                    
+                    // Try to check if Docker actually works
+                    try {
+                        sh 'docker --version > /dev/null 2>&1'
+                        dockerExists = true
+                        echo "Docker is working properly"
+                    } catch (Exception e) {
+                        echo "Docker is not available: ${e.message}"
+                        dockerExists = false
+                    }
+                    
+                    // Create a temporary Dockerfile regardless
+                    sh '''
+                    cat > Dockerfile.jenkins << EOF
 # Build stage
 FROM gradle:7.6-jdk17 AS build
 WORKDIR /app
@@ -66,17 +76,16 @@ COPY --from=build /app/build/libs/*.war demo.war
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
 EOF
-                '''
-                
-                // Try to build the Docker image using the temporary Dockerfile
-                sh '''
-                if command -v docker &> /dev/null; then
-                    docker build -f Dockerfile.jenkins -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} .
-                    docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest
-                else
-                    echo "Simulating Docker build - would build: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                fi
-                '''
+                    '''
+                    
+                    // Only try to build if Docker is working
+                    if (dockerExists) {
+                        sh "docker build -f Dockerfile.jenkins -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                        sh "docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                    } else {
+                        echo "Simulating Docker build - would build: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    }
+                }
             }
         }
         
@@ -90,16 +99,27 @@ EOF
         
         stage('Push to Registry') {
             steps {
-                // Push the Docker image to registry
-                sh '''
-                if command -v docker &> /dev/null; then
-                    # This would use credentials in a real environment
-                    echo "Would push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} to registry"
-                    echo "Would push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest to registry"
-                else
-                    echo "Simulating Docker push - would push: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                fi
-                '''
+                script {
+                    def dockerExists = false
+                    
+                    // Try to check if Docker actually works
+                    try {
+                        sh 'docker --version > /dev/null 2>&1'
+                        dockerExists = true
+                        echo "Docker is working properly"
+                    } catch (Exception e) {
+                        echo "Docker is not available: ${e.message}"
+                        dockerExists = false
+                    }
+                    
+                    // Only try to push if Docker is working
+                    if (dockerExists) {
+                        echo "Would use credentials to push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} to registry"
+                        echo "Would push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest to registry"
+                    } else {
+                        echo "Simulating Docker push - would push: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    }
+                }
             }
         }
         
