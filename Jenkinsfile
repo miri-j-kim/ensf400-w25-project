@@ -34,9 +34,14 @@ pipeline {
         
         stage('Build Java Application') {
             steps {
-                // Build Java application with Gradle
-                // You can replace with Maven if that's what you're using
-                sh './gradlew clean build'
+                // Use Docker to build with a compatible Java version
+                sh '''
+                docker run --rm \
+                  -v "${PWD}":/app \
+                  -w /app \
+                  gradle:7.6-jdk17 \
+                  ./gradlew clean build
+                '''
             }
         }
         
