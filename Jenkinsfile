@@ -1,8 +1,9 @@
-// This Jenkinsfile is meant to be placed in the root directory
-// It references and extends the existing Jenkins configuration from the 'jenkins' directory
-
 pipeline {
     agent any
+    
+    parameters {
+        booleanParam(name: 'RUN_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Run the comprehensive test pipeline from jenkins/Jenkinsfile')
+    }
     
     environment {
         // Define environment variables
@@ -13,14 +14,12 @@ pipeline {
     }
     
     stages {
-        // Load existing Jenkins configuration if needed
+        // Load existing Jenkins configuration
         stage('Load Existing Config') {
             steps {
                 script {
                     if (fileExists("${JENKINS_CONFIG_DIR}/Jenkinsfile")) {
                         echo "Found existing Jenkinsfile in ${JENKINS_CONFIG_DIR}"
-                        // You can load properties or other configurations here if needed
-                        // def existingConfig = load "${JENKINS_CONFIG_DIR}/some-shared-script.groovy"
                     }
                 }
             }
@@ -60,28 +59,12 @@ pipeline {
                         dockerExists = false
                     }
                     
-                    // Create a temporary Dockerfile regardless
-                    sh '''
-                    cat > Dockerfile.jenkins << EOF
-# Build stage
-FROM gradle:7.6-jdk17 AS build
-WORKDIR /app
-COPY . /app/
-RUN ./gradlew build || echo "Build would happen here"
-
-# Final stage - using your original Dockerfile
-FROM tomcat:9.0-jdk11
-WORKDIR /usr/local/tomcat/webapps/
-COPY --from=build /app/build/libs/*.war demo.war
-EXPOSE 8080
-CMD ["catalina.sh", "run"]
-EOF
-                    '''
-                    
                     // Only try to build if Docker is working
                     if (dockerExists) {
-                        sh "docker build -f Dockerfile.jenkins -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                        // Build using the existing Dockerfile in the root directory
+                        sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ."
                         sh "docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                        echo "Docker image built successfully"
                     } else {
                         echo "Simulating Docker build - would build: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
