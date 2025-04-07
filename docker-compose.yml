@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   jenkins:
-    build: .
+    image: jenkins/jenkins:lts-jdk11
     privileged: true
     user: root
     ports:
