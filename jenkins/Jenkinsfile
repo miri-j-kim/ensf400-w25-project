@@ -4,10 +4,6 @@ pipeline {
 
   agent any
 
-    tools {
-      jdk 'JDK11'  // Replace with your Jenkins tool name for Java 11
-    }
-
    environment {
         // This is set so that the Python API tests will recognize it
         // and go through the Zap proxy waiting at 9888
