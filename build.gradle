@@ -449,7 +449,7 @@ task checkQualityGate() {
     }
 }
 
-// throws an exception if the quality gate fails.
+// throws an exception if the quality gate fails!
 static void isQualityGateGood() {
     String sonarUrl = "http://sonarqube:9000/api/qualitygates/project_status?projectKey=Demo"
     try {
