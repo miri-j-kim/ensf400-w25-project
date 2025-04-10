@@ -454,7 +454,7 @@ static void isQualityGateGood() {
     URL url = new URL("http://sonarqube:9000/api/qualitygates/project_status?projectKey=Demo")
     HttpURLConnection connection = (HttpURLConnection) url.openConnection()
     connection.setRequestMethod("GET")
-    connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString("squ_67182786c6e6755a1271155844d487ea0b04ab9f:".getBytes()));
+    connection.setRequestProperty("Authorization", "Basic " + "squ_0b7caa283ce1a5f1791424a4dcc9a17cca96b630");
     connection.connect()
     int code = connection.getResponseCode()
     BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))
