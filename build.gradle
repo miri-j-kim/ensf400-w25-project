@@ -266,7 +266,7 @@ check.dependsOn(jacocoTestReport)
 
 sonarqube {
     properties {
-        property "sonar.host.url", "http://sonarqube:9000"
+        property "sonar.host.url", "http://localhost:9000"
         property "sonar.projectKey", "$projectname"
         property "sonar.projectName", "$projectname"
         property "sonar.projectDescription", "A demonstration of a web application with good test coverage and best practices"
