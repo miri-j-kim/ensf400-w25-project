@@ -41,3 +41,8 @@ services:
 networks:
   network:
     driver: bridge
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
