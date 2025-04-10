@@ -33,6 +33,10 @@ services:
       - network
     environment:
       - SONAR_WEB_PORT=9000
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
 
 networks:
   network:
