@@ -457,14 +457,8 @@ static void isQualityGateGood() {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection()
         connection.setRequestMethod("GET")
         connection.setRequestProperty("Authorization", "Basic " + "squ_0b7caa283ce1a5f1791424a4dcc9a17cca96b630:".bytes.encodeBase64().toString())
-
         connection.connect()
         int code = connection.getResponseCode()
-        
-        if (code != 200) {
-            throw new GradleException("response from Sonar was " + code)
-        }
-
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))
         String strCurrentLine
         while ((strCurrentLine = br.readLine()) != null) {
@@ -474,8 +468,11 @@ static void isQualityGateGood() {
             }
         }
         br.close()
+        if (code != 200) {
+            throw new GradleException("response from Sonar was " + code)
+        }
     } catch (IOException e) {
-        throw new GradleException("Failed to check quality gate. " + e.getMessage(), e)
+        throw new GradleException("Could not check quality gate. " + e.getMessage(), e)
     }
 }
 
