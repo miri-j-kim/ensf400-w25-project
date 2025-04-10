@@ -32,7 +32,6 @@ services:
     networks:
       - network
     environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
       - SONAR_WEB_PORT=9000
 
 networks:
