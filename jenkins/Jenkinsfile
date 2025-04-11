@@ -72,13 +72,13 @@ pipeline {
         sh './gradlew checkQualityGate'
       }
     }
+  }
 
-    post {
-        always {
-            // GitHub commit status notifier
-            githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
-        }
-    }
+  post {
+      always {
+          // GitHub commit status notifier
+          githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
+      }
   }
 
 
