@@ -75,29 +75,26 @@ pipeline {
   }
 
   post {
-        success {
-            script {
-                // Set GitHub commit status to "SUCCESS"
-                githubCommitStatus(
-                    context: 'ci-status',
-                    state: 'success',
-                    description: 'Build succeeded',
-                    targetUrl: env.BUILD_URL
-                )
-            }
-        }
-        failure {
-            script {
-                // Set GitHub commit status to "FAILURE"
-                githubCommitStatus(
-                    context: 'ci-status',
-                    state: 'failure',
-                    description: 'Build failed',
-                    targetUrl: env.BUILD_URL
-                )
-            }
+    success {
+        script {
+            setGitHubPullRequestStatus(
+                context: 'CI',
+                status: 'SUCCESS',
+                description: 'Build succeeded'
+            )
         }
     }
+    failure {
+        script {
+            setGitHubPullRequestStatus(
+                context: 'CI',
+                status: 'FAILURE',
+                description: 'Build failed'
+            )
+        }
+    }
+  }
+
 }
   //   // Move the binary over to the test environment and
   //   // get it running, in preparation for tests that
