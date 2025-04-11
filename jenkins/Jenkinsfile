@@ -79,7 +79,7 @@ pipeline {
             githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
         }
     }
-}
+  }
 
 
 
@@ -215,3 +215,4 @@ pipeline {
   //     }
   //   }
 
+}
