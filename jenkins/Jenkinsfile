@@ -12,8 +12,7 @@ pipeline {
 
   stages {
 
-    // build the war file (the binary).  This is the only
-    // place that happens.
+    // build the war file (the binary).  This is the only place that happens.
     stage('Build') {
       steps {
         sh './gradlew clean assemble'
