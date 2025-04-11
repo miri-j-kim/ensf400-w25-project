@@ -77,20 +77,12 @@ pipeline {
   post {
     success {
         script {
-            setGitHubPullRequestStatus(
-                context: 'CI',
-                status: 'SUCCESS',
-                description: 'Build succeeded'
-            )
+            setGitHubPullRequestStatus context: 'CI', state: 'SUCCESS'
         }
     }
     failure {
         script {
-            setGitHubPullRequestStatus(
-                context: 'CI',
-                status: 'FAILURE',
-                description: 'Build failed'
-            )
+            setGitHubPullRequestStatus context: 'CI', state: 'FAILURE'
         }
     }
   }
