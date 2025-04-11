@@ -5,7 +5,7 @@ FROM tomcat:9.0-jdk11
 WORKDIR /usr/local/tomcat/webapps/
 
 #Copy the built WAR file into Tomcat's webapps directory
-COPY build/libs/*.war demo.war
+COPY build/libs/ensf400-w25-project-1.0.0.war demo.war
 
 #Expose port 8080
 EXPOSE 8080

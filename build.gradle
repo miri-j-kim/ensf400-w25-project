@@ -266,6 +266,7 @@ check.dependsOn(jacocoTestReport)
 
 sonarqube {
     properties {
+        property "sonar.host.url", "http://sonarqube:9000"
         property "sonar.projectKey", "$projectname"
         property "sonar.projectName", "$projectname"
         property "sonar.projectDescription", "A demonstration of a web application with good test coverage and best practices"
@@ -448,24 +449,30 @@ task checkQualityGate() {
     }
 }
 
-// throws an exception if the quality gate fails.
+// throws an exception if the quality gate fails!
 static void isQualityGateGood() {
-    URL url = new URL("http://localhost:9000/api/qualitygates/project_status?projectKey=Demo")
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection()
-    connection.setRequestMethod("GET")
-    connection.connect()
-    int code = connection.getResponseCode()
-    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))
-    String strCurrentLine
-    while ((strCurrentLine = br.readLine()) != null) {
-        // ha ha no need to parse JSON!
-        print(strCurrentLine)
-        if (strCurrentLine.startsWith("{\"projectStatus\":{\"status\":\"ERROR\"")) {
-            throw new GradleException("The quality gate for Demo on Sonarqube failed.  Check Sonarqube.")
+    String sonarUrl = "http://sonarqube:9000/api/qualitygates/project_status?projectKey=Demo"
+    try {
+        URL url = new URL(sonarUrl)
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection()
+        connection.setRequestMethod("GET")
+        connection.setRequestProperty("Authorization", "Basic " + "squ_7b5d2b5f26b3f3edaf68ef0e10d6bb938c98cef0:".bytes.encodeBase64().toString())
+        connection.connect()
+        int code = connection.getResponseCode()
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))
+        String strCurrentLine
+        while ((strCurrentLine = br.readLine()) != null) {
+            print(strCurrentLine)
+            if (strCurrentLine.startsWith("{\"projectStatus\":{\"status\":\"ERROR\"")) {
+                throw new GradleException("The quality gate for Demo on Sonarqube failed. Check Sonarqube.")
+            }
         }
-    }
-    if (code != 200) {
-        throw new GradleException("response from Sonar was " + code)
+        br.close()
+        if (code != 200) {
+            throw new GradleException("response from Sonar was " + code)
+        }
+    } catch (IOException e) {
+        throw new GradleException("Could not check quality gate. " + e.getMessage(), e)
     }
 }
 
