@@ -77,12 +77,12 @@ pipeline {
   post {
     success {
         script {
-            setGitHubPullRequestStatus context: 'CI', state: 'SUCCESS'
+            setGitHubPullRequestStatus context: 'Jenkins CI/CD Pipeline Build', state: 'SUCCESS'
         }
     }
     failure {
         script {
-            setGitHubPullRequestStatus context: 'CI', state: 'FAILURE'
+            setGitHubPullRequestStatus context: 'Jenkins CI/CD Pipeline Build', state: 'FAILURE'
         }
     }
   }
