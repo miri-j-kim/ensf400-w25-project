@@ -61,13 +61,6 @@ pipeline {
           }
         }
 
-    post {
-      always {
-          githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
-      }
-    }
-    }
-
     // Runs an analysis of the code, looking for any
     // patterns that suggest potential bugs.
     stage('Static Analysis') {
@@ -76,6 +69,13 @@ pipeline {
         // wait for sonarqube to finish its analysis
         sleep 5
         sh './gradlew checkQualityGate'
+      }
+    }
+
+    post {
+        always {
+            githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
+        }
       }
     }
 
