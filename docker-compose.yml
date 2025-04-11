@@ -1,0 +1,48 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    privileged: true
+    user: root
+    ports:
+    - 8081:8080
+    - 50000:50000
+    container_name: jenkins
+    volumes:
+    - /jenkins_home:/var/jenkins_home
+    - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - network
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+    networks:
+      - network
+
+  sonarqube:
+    image: sonarqube:9.9-community
+    container_name: sonarqube
+    ports:
+    - "9000:9000"
+    networks:
+      - network
+    environment:
+      - SONAR_WEB_PORT=9000
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:

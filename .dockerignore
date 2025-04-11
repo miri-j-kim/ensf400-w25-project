@@ -1,0 +1,4 @@
+jenkins_home/secrets
+jenkins_home/secrets/*
+**/jenkins_home/secrets
+**/jenkins_home/secrets/*
