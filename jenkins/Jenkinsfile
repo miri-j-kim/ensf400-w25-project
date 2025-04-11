@@ -60,6 +60,12 @@ pipeline {
             junit 'build/test-results/bdd/*.xml'
           }
         }
+
+    post {
+      always {
+          githubCommitStatusNotifier(context: 'jenkins/ci', status: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE')
+      }
+    }
     }
 
     // Runs an analysis of the code, looking for any
