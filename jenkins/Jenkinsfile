@@ -73,15 +73,32 @@ pipeline {
       }
     }
   }
-  post {
-    success {
-        setBuildStatus("Build succeeded", "SUCCESS");
-    }
-    failure {
-        setBuildStatus("Build failed", "FAILURE");
-    }
-  }
 
+  post {
+        success {
+            script {
+                // Set GitHub commit status to "SUCCESS"
+                githubCommitStatus(
+                    context: 'ci-status',
+                    state: 'success',
+                    description: 'Build succeeded',
+                    targetUrl: env.BUILD_URL
+                )
+            }
+        }
+        failure {
+            script {
+                // Set GitHub commit status to "FAILURE"
+                githubCommitStatus(
+                    context: 'ci-status',
+                    state: 'failure',
+                    description: 'Build failed',
+                    targetUrl: env.BUILD_URL
+                )
+            }
+        }
+    }
+}
   //   // Move the binary over to the test environment and
   //   // get it running, in preparation for tests that
   //   // require a whole system to be running.
@@ -213,5 +230,3 @@ pipeline {
   //       sh 'sleep 5'
   //     }
   //   }
-
-}
